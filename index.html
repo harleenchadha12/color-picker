@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Hex Code Picker</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #image-container {
+      position: relative;
+    }
+
+    #image-container canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .color-code {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #fff;
+      padding: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="image-container">
+    <img src="img_colormap (1).gif" id="image" alt="Image">
+    <canvas id="canvas"></canvas>
+    <div class="color-code" id="color-code"></div>
+  </div>
+
+  <script>
+    const image = document.getElementById('image');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const colorCode = document.getElementById('color-code');
+
+    image.onload = function() {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0);
+    };
+
+    function showColorCode(event) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.round(event.clientX - rect.left);
+      const y = Math.round(event.clientY - rect.top);
+
+      const pixelData = ctx.getImageData(x, y, 1, 1).data;
+      const hexCode = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+
+      colorCode.textContent = `Hex Code: ${hexCode}`;
+    }
+
+    function rgbToHex(r, g, b) {
+      const hexR = r.toString(16).padStart(2, '0');
+      const hexG = g.toString(16).padStart(2, '0');
+      const hexB = b.toString(16).padStart(2, '0');
+
+      return `#${hexR}${hexG}${hexB}`;
+    }
+
+    canvas.addEventListener('mousemove', showColorCode);
+    canvas.addEventListener('mouseleave', function() {
+      colorCode.textContent = '';
+    });
+  </script>
+</body>
+</html>
